@@ -29,5 +29,21 @@ export default defineConfig({
   build: {
     outDir: "build",
     sourcemap: false,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          vendor: ["react", "react-dom"],
+          router: ["react-router-dom"],
+          ui: ["react-bootstrap", "bootstrap"],
+          icons: ["react-icons"],
+          utils: ["axios", "react-toastify"],
+        },
+      },
+    },
+    chunkSizeWarningLimit: 1000,
+  },
+  preview: {
+    port: 3000,
+    host: true,
   },
 });

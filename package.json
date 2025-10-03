@@ -1,6 +1,27 @@
 {
+  "name": "lms-app",
+  "version": "1.0.0",
+  "description": "Learning Management System - Full Stack Application",
+  "scripts": {
+    "install:frontend": "cd frontend && npm install",
+    "install:backend": "cd backend && npm install",
+    "install:all": "npm run install:frontend && npm run install:backend",
+    "build:frontend": "cd frontend && npm run build",
+    "start:frontend": "cd frontend && npm start",
+    "start:backend": "cd backend && npm start",
+    "dev:frontend": "cd frontend && npm run dev",
+    "dev:backend": "cd backend && npm run dev",
+    "deploy:netlify": "cd frontend && npm run build",
+    "clean": "rimraf frontend/build && rimraf backend/dist"
+  },
+  "keywords": ["lms", "learning", "education", "react", "nodejs", "mongodb"],
+  "author": "Your Name",
+  "license": "MIT",
   "dependencies": {
     "axios": "^1.12.2",
     "pdf-parse": "^2.1.6"
+  },
+  "devDependencies": {
+    "rimraf": "^5.0.0"
   }
 }

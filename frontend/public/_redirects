@@ -1,0 +1,8 @@
+# SPA redirect rule for React Router
+/*    /index.html   200
+
+# API proxy (if you want to proxy API calls through Netlify)
+/api/*  https://your-backend-url.herokuapp.com/api/:splat  200
+
+# Prevent access to source maps in production
+/*.map   /404.html   404
