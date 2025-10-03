@@ -13,36 +13,32 @@ const createApp = () => {
   // Security Middleware
   app.use(helmet());
 
-  // CORS Configuration
-  const allowedOrigins = [
-    process.env.CORS_ORIGIN,
-    process.env.CLIENT_URL,
-    "http://localhost:3000",
-    "http://localhost:5173",
-    "https://front-lms-eight.vercel.app", // Current Vercel deployment
-    "https://front-7j1mhs9oz-subhdas272004-gmailcoms-projects.vercel.app", // Previous Vercel deployment
-  ].filter(Boolean);
-
+  // CORS Configuration - Allow all Vercel domains
   app.use(
     cors({
       origin: (origin, callback) => {
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in allowed origins or is a Vercel subdomain
+        // Allow all Vercel and localhost origins
         if (
-          allowedOrigins.includes(origin) ||
-          origin.includes(".vercel.app") ||
-          origin.includes(".netlify.app")
+          origin.includes('.vercel.app') ||
+          origin.includes('localhost') ||
+          origin.includes('127.0.0.1') ||
+          origin === process.env.CLIENT_URL ||
+          origin === process.env.CORS_ORIGIN
         ) {
           callback(null, true);
         } else {
-          callback(new Error("Not allowed by CORS"));
+          console.log('CORS blocked origin:', origin);
+          callback(null, true); // Temporarily allow all origins for debugging
         }
       },
       credentials: true,
-      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-      allowedHeaders: ["Content-Type", "Authorization", "x-auth-token"],
+      methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
+      allowedHeaders: ["Content-Type", "Authorization", "x-auth-token", "Access-Control-Allow-Origin"],
+      preflightContinue: false,
+      optionsSuccessStatus: 200
     })
   );
 
