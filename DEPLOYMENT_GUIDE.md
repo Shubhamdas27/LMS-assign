@@ -3,10 +3,12 @@
 ## Steps to Deploy Backend to Render.com
 
 ### 1. Create a Render Account
+
 - Go to https://render.com and sign up/login
 - Connect your GitHub account
 
 ### 2. Deploy the Backend
+
 1. Click "New +" in Render dashboard
 2. Select "Web Service"
 3. Connect your GitHub repository: `https://github.com/Shubhamdas27/LMS-assign.git`
@@ -18,6 +20,7 @@
    - **Start Command**: `npm start`
 
 ### 3. Set Environment Variables
+
 Add these environment variables in Render dashboard:
 
 ```
@@ -42,15 +45,18 @@ ADMIN_NAME=Admin User
 ```
 
 ### 4. Expected Backend URL
+
 After deployment, your backend will be available at:
 `https://lms-backend-xxxx.onrender.com`
 
 Replace `xxxx` with the actual identifier Render assigns.
 
 ### 5. Update Frontend Environment
+
 Once deployed, update the frontend environment variable:
 `VITE_API_BASE_URL=https://your-backend-url.onrender.com/api`
 
 ## Current Status
+
 - ✅ Frontend deployed to Vercel: https://front-g4knxto8i-subhdas272004-gmailcoms-projects.vercel.app
 - ⏳ Backend ready for Render deployment (follow steps above)
