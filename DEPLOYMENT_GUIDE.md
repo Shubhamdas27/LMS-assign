@@ -47,16 +47,16 @@ ADMIN_NAME=Admin User
 ### 4. Expected Backend URL
 
 After deployment, your backend will be available at:
-`https://lms-backend-xxxx.onrender.com`
-
-Replace `xxxx` with the actual identifier Render assigns.
+`https://lms-assign.onrender.com`
 
 ### 5. Update Frontend Environment
 
-Once deployed, update the frontend environment variable:
-`VITE_API_BASE_URL=https://your-backend-url.onrender.com/api`
+✅ **COMPLETED** - Frontend environment variable updated:
+`VITE_API_BASE_URL=https://lms-assign.onrender.com/api`
 
 ## Current Status
 
-- ✅ Frontend deployed to Vercel: https://front-g4knxto8i-subhdas272004-gmailcoms-projects.vercel.app
-- ⏳ Backend ready for Render deployment (follow steps above)
+- ✅ Frontend deployed to Vercel: https://front-7j1mhs9oz-subhdas272004-gmailcoms-projects.vercel.app
+- ✅ Backend deployed to Render: https://lms-assign.onrender.com
+- ✅ Frontend updated with correct backend API URL
+- ✅ Full-stack deployment COMPLETE!
