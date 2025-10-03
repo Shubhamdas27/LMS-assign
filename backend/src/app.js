@@ -19,7 +19,8 @@ const createApp = () => {
     process.env.CLIENT_URL,
     "http://localhost:3000",
     "http://localhost:5173",
-    "https://your-netlify-app.netlify.app", // Replace with your actual Netlify URL
+    "https://front-lms-eight.vercel.app", // Current Vercel deployment
+    "https://front-7j1mhs9oz-subhdas272004-gmailcoms-projects.vercel.app", // Previous Vercel deployment
   ].filter(Boolean);
 
   app.use(
@@ -28,9 +29,10 @@ const createApp = () => {
         // Allow requests with no origin (mobile apps, Postman, etc.)
         if (!origin) return callback(null, true);
 
-        // Check if origin is in allowed origins or is a Netlify subdomain
+        // Check if origin is in allowed origins or is a Vercel subdomain
         if (
           allowedOrigins.includes(origin) ||
+          origin.includes(".vercel.app") ||
           origin.includes(".netlify.app")
         ) {
           callback(null, true);

@@ -9,6 +9,10 @@ services:
         value: production
       - key: PORT
         value: 10000
+      - key: CLIENT_URL
+        value: https://front-lms-eight.vercel.app
+      - key: CORS_ORIGIN
+        value: https://front-lms-eight.vercel.app
       - key: MONGO_URI
         fromDatabase:
           name: mongodb
