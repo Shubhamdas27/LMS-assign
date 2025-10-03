@@ -164,6 +164,17 @@ exports.summarizeDocument = async (req, res) => {
 
     // Generate summary using Gemini AI
     console.log(`🤖 Generating AI summary for: ${document.title}`);
+    
+    // Check if Gemini is properly initialized
+    const { isGeminiInitialized } = require("../utils/gemini");
+    if (!isGeminiInitialized()) {
+      return res.status(503).json({
+        success: false,
+        message: "AI summarization service is currently unavailable. Please check API configuration.",
+        error: "Gemini AI not initialized"
+      });
+    }
+    
     const summary = await generateSummary(documentText, document.title);
 
     // Save summary to database for caching

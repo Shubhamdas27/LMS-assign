@@ -27,13 +27,24 @@ const initializeGemini = () => {
 };
 
 /**
+ * Check if Gemini AI is properly initialized
+ */
+const isGeminiInitialized = () => {
+  return model !== null && genAI !== null;
+};
+
+/**
  * Generate summary for document text
  * @param {string} documentText - Text content to summarize
  * @param {string} documentTitle - Title of the document
  */
 const generateSummary = async (documentText, documentTitle = "") => {
   if (!model) {
-    throw new Error("Gemini AI is not initialized");
+    throw new Error("Gemini AI is not initialized. Please check GEMINI_API_KEY environment variable.");
+  }
+
+  if (!process.env.GEMINI_API_KEY) {
+    throw new Error("GEMINI_API_KEY environment variable is not set.");
   }
 
   try {
@@ -92,6 +103,7 @@ const extractTextFromDocument = async (fileUrl, fileType) => {
 
 module.exports = {
   initializeGemini,
+  isGeminiInitialized,
   generateSummary,
   extractTextFromDocument,
 };

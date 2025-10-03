@@ -22,23 +22,28 @@ const createApp = () => {
 
         // Allow all Vercel and localhost origins
         if (
-          origin.includes('.vercel.app') ||
-          origin.includes('localhost') ||
-          origin.includes('127.0.0.1') ||
+          origin.includes(".vercel.app") ||
+          origin.includes("localhost") ||
+          origin.includes("127.0.0.1") ||
           origin === process.env.CLIENT_URL ||
           origin === process.env.CORS_ORIGIN
         ) {
           callback(null, true);
         } else {
-          console.log('CORS blocked origin:', origin);
+          console.log("CORS blocked origin:", origin);
           callback(null, true); // Temporarily allow all origins for debugging
         }
       },
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
-      allowedHeaders: ["Content-Type", "Authorization", "x-auth-token", "Access-Control-Allow-Origin"],
+      allowedHeaders: [
+        "Content-Type",
+        "Authorization",
+        "x-auth-token",
+        "Access-Control-Allow-Origin",
+      ],
       preflightContinue: false,
-      optionsSuccessStatus: 200
+      optionsSuccessStatus: 200,
     })
   );
 
