@@ -164,40 +164,52 @@ const generateFallbackSummary = (documentText, documentTitle) => {
 
   // Create a more comprehensive fallback summary
   let summary = `**Overview of ${documentTitle}**\n\n`;
-  
+
   // Add introduction
   summary += `This educational document covers important concepts related to ${documentTitle}. `;
-  
+
   if (sentences.length > 0) {
-    summary += `The material begins by introducing ${sentences[0].trim().toLowerCase()}. `;
+    summary += `The material begins by introducing ${sentences[0]
+      .trim()
+      .toLowerCase()}. `;
   }
-  
+
   summary += `This content is designed to provide students with a comprehensive understanding of the subject matter.\n\n`;
-  
+
   // Add key concepts section
   summary += `**Key Concepts:**\n`;
   if (sentences.length >= 3) {
-    summary += sentences.slice(0, 3).map(s => s.trim()).join('. ') + '. ';
+    summary +=
+      sentences
+        .slice(0, 3)
+        .map((s) => s.trim())
+        .join(". ") + ". ";
   }
   summary += `These fundamental concepts form the foundation for understanding more advanced topics in this field. Students should focus on grasping these core principles before moving on to more complex applications.\n\n`;
-  
+
   // Add learning objectives
   summary += `**Learning Objectives:**\n`;
   summary += `After studying this material, students should be able to understand the main principles presented, apply the concepts in practical scenarios, and demonstrate knowledge of the key terminology and processes. `;
-  
+
   if (sentences.length >= 5) {
-    summary += `Specifically, students will learn about ${sentences[3].trim().toLowerCase()} and ${sentences[4].trim().toLowerCase()}. `;
+    summary += `Specifically, students will learn about ${sentences[3]
+      .trim()
+      .toLowerCase()} and ${sentences[4].trim().toLowerCase()}. `;
   }
-  
+
   summary += `This knowledge will serve as a building block for more advanced studies in the field.\n\n`;
-  
+
   // Add important details
   summary += `**Important Details:**\n`;
   if (sentences.length > 5) {
-    summary += sentences.slice(5, Math.min(sentences.length, 8)).map(s => s.trim()).join('. ') + '. ';
+    summary +=
+      sentences
+        .slice(5, Math.min(sentences.length, 8))
+        .map((s) => s.trim())
+        .join(". ") + ". ";
   }
   summary += `Students should pay particular attention to the specific examples and detailed explanations provided in the document. These details are crucial for developing a thorough understanding of the subject matter.\n\n`;
-  
+
   // Add conclusion
   summary += `**Conclusion:**\n`;
   summary += `This material provides essential knowledge that is fundamental to understanding ${documentTitle}. Students are encouraged to review the content thoroughly and practice applying the concepts in various contexts. The information presented here will be valuable for both immediate learning objectives and future advanced studies in related areas.`;
