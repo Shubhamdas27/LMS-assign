@@ -7,6 +7,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 
 let genAI = null;
 let model = null;
+let currentModelName = null;
 
 /**
  * Initialize Gemini AI
@@ -18,17 +19,30 @@ const initializeGemini = async () => {
     }
 
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-
-    console.log("✅ Gemini AI initialized");
-    return true;
+    
+    // Try models in order of preference
+    const models = ["gemini-pro", "gemini-1.5-pro", "gemini-1.0-pro"];
+    
+    for (const modelName of models) {
+      try {
+        model = genAI.getGenerativeModel({ model: modelName });
+        // Test the model
+        await model.generateContent("test");
+        currentModelName = modelName;
+        console.log(`✅ Gemini AI initialized with model: ${modelName}`);
+        return true;
+      } catch (err) {
+        console.log(`❌ Model ${modelName} not available, trying next...`);
+        continue;
+      }
+    }
+    
+    throw new Error("No available Gemini models found");
   } catch (error) {
     console.error("❌ Gemini initialization failed:", error.message);
     throw error;
   }
-};
-
-/**
+};/**
  * Check if Gemini is initialized
  */
 const isGeminiInitialized = () => {
@@ -93,7 +107,7 @@ ${documentText}
 const getModelInfo = () => {
   return {
     initialized: isGeminiInitialized(),
-    modelName: model ? "gemini-1.5-flash" : null,
+    modelName: currentModelName,
   };
 };
 
