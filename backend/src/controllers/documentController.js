@@ -168,10 +168,30 @@ exports.summarizeDocument = async (req, res) => {
     // Check if Gemini is properly initialized
     const { isGeminiInitialized } = require("../utils/gemini");
     if (!isGeminiInitialized()) {
-      return res.status(503).json({
-        success: false,
-        message: "AI summarization service is currently unavailable. Please check API configuration.",
-        error: "Gemini AI not initialized"
+      console.log("⚠️ Gemini AI not available, returning fallback message");
+      
+      // Save a fallback summary instead of failing
+      const fallbackSummary = `📄 **${document.title}**
+
+AI summarization is currently unavailable. Please review the document manually.
+
+**To enable AI summarization:**
+- Ensure GEMINI_API_KEY is configured in the environment
+- Contact administrator for assistance
+
+**Document Details:**
+- Type: ${document.fileType || 'Unknown'}
+- Added: ${document.createdAt ? new Date(document.createdAt).toLocaleDateString() : 'Unknown'}`;
+
+      document.summary = fallbackSummary;
+      await document.save();
+
+      return res.json({
+        success: true,
+        message: "AI summarization unavailable. Fallback summary provided.",
+        summary: fallbackSummary,
+        cached: false,
+        aiAvailable: false
       });
     }
     

@@ -85,6 +85,27 @@ const createApp = () => {
     });
   });
 
+  // Gemini Test Route
+  app.get("/api/test-gemini", async (req, res) => {
+    try {
+      const { testGeminiConnection } = require("./utils/gemini");
+      const result = await testGeminiConnection();
+      
+      res.json({
+        success: result.success,
+        message: result.success ? "Gemini AI is working" : "Gemini AI test failed",
+        response: result.response || result.error,
+        timestamp: new Date().toISOString()
+      });
+    } catch (error) {
+      res.status(500).json({
+        success: false,
+        message: "Error testing Gemini connection",
+        error: error.message
+      });
+    }
+  });
+
   // Serve Static Assets in Production
   if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "../frontend/build")));
