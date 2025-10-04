@@ -15,34 +15,25 @@ let currentModelName = null;
 const initializeGemini = async () => {
   try {
     if (!process.env.GEMINI_API_KEY) {
-      throw new Error("GEMINI_API_KEY not found in environment variables");
+      console.warn("⚠️ GEMINI_API_KEY not found - AI summarization disabled");
+      return false;
     }
 
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Try models in order of preference
-    const models = ["gemini-pro", "gemini-1.5-pro", "gemini-1.0-pro"];
+    // Use gemini-pro as default model
+    model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    currentModelName = "gemini-pro";
     
-    for (const modelName of models) {
-      try {
-        model = genAI.getGenerativeModel({ model: modelName });
-        // Test the model
-        await model.generateContent("test");
-        currentModelName = modelName;
-        console.log(`✅ Gemini AI initialized with model: ${modelName}`);
-        return true;
-      } catch (err) {
-        console.log(`❌ Model ${modelName} not available, trying next...`);
-        continue;
-      }
-    }
-    
-    throw new Error("No available Gemini models found");
+    console.log(`✅ Gemini AI initialized with model: gemini-pro`);
+    return true;
   } catch (error) {
     console.error("❌ Gemini initialization failed:", error.message);
-    throw error;
+    console.warn("⚠️ AI summarization will be disabled");
+    return false;
   }
-};/**
+};
+/**
  * Check if Gemini is initialized
  */
 const isGeminiInitialized = () => {
@@ -59,7 +50,10 @@ const generateSummary = async (documentText, documentTitle = "Document") => {
   try {
     // Initialize if not already done
     if (!model) {
-      await initializeGemini();
+      const initialized = await initializeGemini();
+      if (!initialized || !model) {
+        throw new Error("AI summarization is currently unavailable. Please check your GEMINI_API_KEY configuration.");
+      }
     }
 
     if (!documentText || documentText.trim().length === 0) {
