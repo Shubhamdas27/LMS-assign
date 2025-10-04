@@ -164,12 +164,12 @@ exports.summarizeDocument = async (req, res) => {
 
     // Generate summary using Gemini AI
     console.log(`🤖 Generating AI summary for: ${document.title}`);
-    
+
     // Check if Gemini is properly initialized
     const { isGeminiInitialized } = require("../utils/gemini");
     if (!isGeminiInitialized()) {
       console.log("⚠️ Gemini AI not available, returning fallback message");
-      
+
       // Save a fallback summary instead of failing
       const fallbackSummary = `📄 **${document.title}**
 
@@ -180,8 +180,12 @@ AI summarization is currently unavailable. Please review the document manually.
 - Contact administrator for assistance
 
 **Document Details:**
-- Type: ${document.fileType || 'Unknown'}
-- Added: ${document.createdAt ? new Date(document.createdAt).toLocaleDateString() : 'Unknown'}`;
+- Type: ${document.fileType || "Unknown"}
+- Added: ${
+        document.createdAt
+          ? new Date(document.createdAt).toLocaleDateString()
+          : "Unknown"
+      }`;
 
       document.summary = fallbackSummary;
       await document.save();
@@ -191,10 +195,10 @@ AI summarization is currently unavailable. Please review the document manually.
         message: "AI summarization unavailable. Fallback summary provided.",
         summary: fallbackSummary,
         cached: false,
-        aiAvailable: false
+        aiAvailable: false,
       });
     }
-    
+
     const summary = await generateSummary(documentText, document.title);
 
     // Save summary to database for caching

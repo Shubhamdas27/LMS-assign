@@ -21,18 +21,18 @@ const createApp = () => {
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       allowedHeaders: [
         "Origin",
-        "X-Requested-With", 
+        "X-Requested-With",
         "Content-Type",
         "Accept",
         "Authorization",
         "x-auth-token",
         "Access-Control-Allow-Origin",
         "Access-Control-Allow-Headers",
-        "Access-Control-Allow-Methods"
+        "Access-Control-Allow-Methods",
       ],
       exposedHeaders: ["x-auth-token"],
       preflightContinue: false,
-      optionsSuccessStatus: 200
+      optionsSuccessStatus: 200,
     })
   );
 
@@ -40,10 +40,16 @@ const createApp = () => {
   app.use((req, res, next) => {
     res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
     res.header("Access-Control-Allow-Credentials", "true");
-    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-auth-token");
-    
-    if (req.method === 'OPTIONS') {
+    res.header(
+      "Access-Control-Allow-Methods",
+      "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS"
+    );
+    res.header(
+      "Access-Control-Allow-Headers",
+      "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-auth-token"
+    );
+
+    if (req.method === "OPTIONS") {
       res.status(200).end();
       return;
     }
@@ -90,18 +96,20 @@ const createApp = () => {
     try {
       const { testGeminiConnection } = require("./utils/gemini");
       const result = await testGeminiConnection();
-      
+
       res.json({
         success: result.success,
-        message: result.success ? "Gemini AI is working" : "Gemini AI test failed",
+        message: result.success
+          ? "Gemini AI is working"
+          : "Gemini AI test failed",
         response: result.response || result.error,
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
       });
     } catch (error) {
       res.status(500).json({
         success: false,
         message: "Error testing Gemini connection",
-        error: error.message
+        error: error.message,
       });
     }
   });

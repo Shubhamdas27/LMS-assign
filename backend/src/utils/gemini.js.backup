@@ -118,13 +118,54 @@ const generateFallbackSummary = (documentText, documentTitle) => {
   
   return summaryPoints.join('\n');
 };
+  } catch (error) {
+    console.error("❌ Gemini API Error:", {
+      message: error.message,
+      code: error.code,
+      status: error.status,
+      details: error.details || error.toString(),
+    });
+
+    // Provide more specific error messages based on error type
+    if (error.message?.includes("quota")) {
+      throw new Error("AI service quota exceeded. Please try again later.");
+    } else if (error.message?.includes("API key")) {
+      throw new Error(
+        "AI service authentication failed. Please check configuration."
+      );
+    } else if (error.message?.includes("SAFETY")) {
+      throw new Error(
+        "Content filtered by AI safety systems. Please try with different text."
+      );
+    } else if (error.code === "ENOTFOUND" || error.code === "ECONNREFUSED") {
+      throw new Error(
+        "Unable to connect to AI service. Please check network connection."
+      );
+    } else {
+      throw new Error(
+        `AI summarization failed: ${error.message || "Unknown error occurred"}`
+      );
+    }
+  }
+};
 
 /**
  * Extract text from different document types
+ * This is a placeholder - in production, you'd use libraries like:
+ * - pdf-parse for PDFs
+ * - mammoth for DOCX
+ * - Any other appropriate library for different formats
  */
 const extractTextFromDocument = async (fileUrl, fileType) => {
+  // For this implementation, we'll return a placeholder
+  // In production, you would:
+  // 1. Download the file from fileUrl
+  // 2. Use appropriate library to extract text based on fileType
+  // 3. Return the extracted text
+
   console.log(`Extracting text from ${fileType} document: ${fileUrl}`);
-  
+
+  // Placeholder: Return instructions for manual implementation
   return `This is a placeholder for text extraction. 
   
   In production, implement:
@@ -143,11 +184,13 @@ const testGeminiConnection = async () => {
     if (!model) {
       return { success: false, error: "Gemini not initialized" };
     }
-    
-    const testResult = await model.generateContent("Say 'Hello, Gemini is working!'");
+
+    const testResult = await model.generateContent(
+      "Say 'Hello, Gemini is working!'"
+    );
     const response = await testResult.response;
     const text = response.text();
-    
+
     return { success: true, response: text };
   } catch (error) {
     return { success: false, error: error.message };

@@ -17,7 +17,7 @@ const razorpay = new Razorpay({
 if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
   console.error("❌ Razorpay credentials missing:", {
     key_id: !!process.env.RAZORPAY_KEY_ID,
-    key_secret: !!process.env.RAZORPAY_KEY_SECRET
+    key_secret: !!process.env.RAZORPAY_KEY_SECRET,
   });
 } else {
   console.log("✅ Razorpay initialized with credentials");
@@ -119,14 +119,14 @@ exports.verifyPayment = async (req, res) => {
     console.log("Payment verification attempt:", {
       order_id: razorpay_order_id,
       payment_id: razorpay_payment_id,
-      signature_received: razorpay_signature ? "Yes" : "No"
+      signature_received: razorpay_signature ? "Yes" : "No",
     });
 
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
       console.log("Missing verification details:", {
         order_id: !!razorpay_order_id,
         payment_id: !!razorpay_payment_id,
-        signature: !!razorpay_signature
+        signature: !!razorpay_signature,
       });
       return res.status(400).json({
         success: false,
@@ -153,7 +153,7 @@ exports.verifyPayment = async (req, res) => {
     console.log("Signature verification:", {
       expected: expectedSignature,
       received: razorpay_signature,
-      match: razorpay_signature === expectedSignature
+      match: razorpay_signature === expectedSignature,
     });
 
     if (razorpay_signature !== expectedSignature) {
@@ -169,14 +169,14 @@ exports.verifyPayment = async (req, res) => {
         message: "Payment verification failed. Invalid signature.",
         debug: {
           expected: expectedSignature,
-          received: razorpay_signature
-        }
+          received: razorpay_signature,
+        },
       });
     }
 
     // Payment verified successfully
     console.log("✅ Payment signature verified successfully");
-    
+
     const payment = await Payment.findOne({
       razorpayOrderId: razorpay_order_id,
     });
@@ -187,8 +187,8 @@ exports.verifyPayment = async (req, res) => {
         success: false,
         message: "Payment record not found",
         debug: {
-          orderId: razorpay_order_id
-        }
+          orderId: razorpay_order_id,
+        },
       });
     }
 
@@ -196,7 +196,7 @@ exports.verifyPayment = async (req, res) => {
       id: payment._id,
       user: payment.user,
       course: payment.course,
-      amount: payment.amount
+      amount: payment.amount,
     });
 
     // Update payment record

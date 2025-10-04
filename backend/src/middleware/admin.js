@@ -6,7 +6,7 @@
 const admin = (req, res, next) => {
   try {
     // Skip authorization for OPTIONS requests (CORS preflight)
-    if (req.method === 'OPTIONS') {
+    if (req.method === "OPTIONS") {
       return next();
     }
 
