@@ -20,23 +20,23 @@ const initializeGemini = async () => {
     }
 
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    
+
     // Try working models (tested October 2025)
     const models = [
       "gemini-2.5-flash",
-      "gemini-2.0-flash", 
-      "gemini-flash-latest"
+      "gemini-2.0-flash",
+      "gemini-flash-latest",
     ];
-    
+
     for (const modelName of models) {
       try {
         console.log(`🔄 Trying model: ${modelName}...`);
         model = genAI.getGenerativeModel({ model: modelName });
-        
+
         // Quick test
         const test = await model.generateContent("Hi");
         await test.response.text();
-        
+
         currentModelName = modelName;
         console.log(`✅ Gemini AI initialized with model: ${modelName}`);
         return true;
@@ -45,7 +45,7 @@ const initializeGemini = async () => {
         continue;
       }
     }
-    
+
     console.warn("⚠️ No working Gemini models found");
     return false;
   } catch (error) {
@@ -73,7 +73,9 @@ const generateSummary = async (documentText, documentTitle = "Document") => {
     if (!model) {
       const initialized = await initializeGemini();
       if (!initialized || !model) {
-        throw new Error("AI summarization is currently unavailable. Please check your GEMINI_API_KEY configuration.");
+        throw new Error(
+          "AI summarization is currently unavailable. Please check your GEMINI_API_KEY configuration."
+        );
       }
     }
 
@@ -81,22 +83,24 @@ const generateSummary = async (documentText, documentTitle = "Document") => {
       throw new Error("Document text is empty");
     }
 
-    // Build prompt for 500-word summary
-    const prompt = `You are an educational content summarizer. Create a comprehensive 500-word summary of the following document.
+    // Build prompt for minimum 500-word summary
+    const prompt = `You are an educational content summarizer. Create a comprehensive summary of the following document.
 
 **Document Title:** ${documentTitle}
 
 **Document Content:**
 ${documentText}
 
-**Instructions:**
-- Write exactly 500 words (approximately)
-- Create a well-structured, flowing summary
-- Include key concepts, main points, and important details
-- Use clear, educational language
-- Make it informative and comprehensive
+**CRITICAL INSTRUCTIONS - MUST FOLLOW:**
+1. Write AT LEAST 500 words (minimum requirement - aim for 500-700 words)
+2. Create a well-structured, flowing summary with multiple paragraphs
+3. Include ALL key concepts, main points, and important details
+4. Use clear, educational language suitable for students
+5. Make it informative, comprehensive, and academically valuable
+6. Ensure the summary is detailed and thorough - DO NOT make it brief
+7. If the content is short, expand on the concepts and provide context
 
-**Summary:**`;
+**Summary (Minimum 500 words):**`;
 
     // Generate summary
     console.log(`📝 Generating summary for: ${documentTitle}`);
