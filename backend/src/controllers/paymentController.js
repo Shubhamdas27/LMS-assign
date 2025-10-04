@@ -13,6 +13,16 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_KEY_SECRET,
 });
 
+// Log Razorpay initialization status
+if (!process.env.RAZORPAY_KEY_ID || !process.env.RAZORPAY_KEY_SECRET) {
+  console.error("❌ Razorpay credentials missing:", {
+    key_id: !!process.env.RAZORPAY_KEY_ID,
+    key_secret: !!process.env.RAZORPAY_KEY_SECRET
+  });
+} else {
+  console.log("✅ Razorpay initialized with credentials");
+}
+
 /**
  * @route   POST /api/payment/create-order
  * @desc    Create Razorpay order for course payment
@@ -106,10 +116,30 @@ exports.verifyPayment = async (req, res) => {
     const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
       req.body;
 
+    console.log("Payment verification attempt:", {
+      order_id: razorpay_order_id,
+      payment_id: razorpay_payment_id,
+      signature_received: razorpay_signature ? "Yes" : "No"
+    });
+
     if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
+      console.log("Missing verification details:", {
+        order_id: !!razorpay_order_id,
+        payment_id: !!razorpay_payment_id,
+        signature: !!razorpay_signature
+      });
       return res.status(400).json({
         success: false,
         message: "Missing payment verification details",
+      });
+    }
+
+    // Check if Razorpay credentials are available
+    if (!process.env.RAZORPAY_KEY_SECRET) {
+      console.error("RAZORPAY_KEY_SECRET not found in environment variables");
+      return res.status(500).json({
+        success: false,
+        message: "Payment service configuration error",
       });
     }
 
@@ -120,8 +150,15 @@ exports.verifyPayment = async (req, res) => {
       .update(sign.toString())
       .digest("hex");
 
+    console.log("Signature verification:", {
+      expected: expectedSignature,
+      received: razorpay_signature,
+      match: razorpay_signature === expectedSignature
+    });
+
     if (razorpay_signature !== expectedSignature) {
       // Payment verification failed
+      console.log("Payment verification failed - signature mismatch");
       await Payment.updateOne(
         { razorpayOrderId: razorpay_order_id },
         { status: "failed" }
@@ -130,20 +167,37 @@ exports.verifyPayment = async (req, res) => {
       return res.status(400).json({
         success: false,
         message: "Payment verification failed. Invalid signature.",
+        debug: {
+          expected: expectedSignature,
+          received: razorpay_signature
+        }
       });
     }
 
     // Payment verified successfully
+    console.log("✅ Payment signature verified successfully");
+    
     const payment = await Payment.findOne({
       razorpayOrderId: razorpay_order_id,
     });
 
     if (!payment) {
+      console.log("❌ Payment record not found for order:", razorpay_order_id);
       return res.status(404).json({
         success: false,
         message: "Payment record not found",
+        debug: {
+          orderId: razorpay_order_id
+        }
       });
     }
+
+    console.log("Found payment record:", {
+      id: payment._id,
+      user: payment.user,
+      course: payment.course,
+      amount: payment.amount
+    });
 
     // Update payment record
     payment.razorpayPaymentId = razorpay_payment_id;
