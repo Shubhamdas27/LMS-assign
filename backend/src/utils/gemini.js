@@ -7,7 +7,7 @@ const { GoogleGenerativeAI } = require("@google/generative-ai");
 let genAI = null;
 let model = null;
 
-const initializeGemini = () => {
+const initializeGemini = async () => {
   try {
     console.log("🔧 Initializing Gemini AI...");
     
@@ -18,7 +18,38 @@ const initializeGemini = () => {
     
     console.log("🔑 GEMINI_API_KEY found, creating client...");
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-    model = genAI.getGenerativeModel({ model: "gemini-pro" });
+    
+    // Try different model names in order of preference
+    const modelNames = [
+      "gemini-1.5-flash",
+      "gemini-1.5-pro", 
+      "gemini-1.0-pro",
+      "models/gemini-pro"
+    ];
+    
+    let modelInitialized = false;
+    
+    for (const modelName of modelNames) {
+      try {
+        console.log(`🔄 Trying model: ${modelName}`);
+        model = genAI.getGenerativeModel({ model: modelName });
+        
+        // Test the model with a simple request
+        const testResult = await model.generateContent("Hello");
+        await testResult.response;
+        
+        console.log(`✅ Successfully initialized with model: ${modelName}`);
+        modelInitialized = true;
+        break;
+      } catch (error) {
+        console.log(`❌ Model ${modelName} failed: ${error.message}`);
+        continue;
+      }
+    }
+    
+    if (!modelInitialized) {
+      throw new Error("All Gemini models failed to initialize");
+    }
     
     console.log("✅ Google Gemini AI initialized successfully");
     return true;
@@ -48,7 +79,7 @@ const generateSummary = async (documentText, documentTitle = "") => {
   // Check if Gemini is initialized
   if (!model || !genAI) {
     console.log("⚠️ Gemini not initialized, attempting to reinitialize...");
-    const initialized = initializeGemini();
+    const initialized = await initializeGemini();
     if (!initialized || !model) {
       return generateFallbackSummary(documentText, documentTitle);
     }

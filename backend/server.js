@@ -6,39 +6,48 @@ const createApp = require("./src/app");
 // Load environment variables
 dotenv.config();
 
-// Connect to MongoDB
-connectDB();
+// Create an async function to initialize everything
+const startServer = async () => {
+  // Connect to MongoDB
+  connectDB();
 
-// Initialize Gemini AI
-initializeGemini();
+  // Initialize Gemini AI
+  await initializeGemini();
 
-// Create Express app
-const app = createApp();
+  // Create Express app
+  const app = createApp();
 
-// Start server
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-  console.log(
-    `\n🚀 Server running in ${
-      process.env.NODE_ENV || "development"
-    } mode on port ${PORT}`
-  );
-  console.log(`📡 API: http://localhost:${PORT}/api`);
-  console.log(`🏥 Health: http://localhost:${PORT}/api/health\n`);
-});
-
-// Handle unhandled promise rejections
-process.on("unhandledRejection", (err) => {
-  console.error(`❌ Unhandled Rejection: ${err.message}`);
-  server.close(() => process.exit(1));
-});
-
-// Handle SIGTERM
-process.on("SIGTERM", () => {
-  console.log("👋 SIGTERM received. Shutting down gracefully...");
-  server.close(() => {
-    console.log("✅ Process terminated!");
+  // Start server
+  const PORT = process.env.PORT || 5000;
+  const server = app.listen(PORT, () => {
+    console.log(
+      `\n🚀 Server running in ${
+        process.env.NODE_ENV || "development"
+      } mode on port ${PORT}`
+    );
+    console.log(`📡 API: http://localhost:${PORT}/api`);
+    console.log(`🏥 Health: http://localhost:${PORT}/api/health\n`);
   });
-});
 
-module.exports = app;
+  // Handle unhandled promise rejections
+  process.on("unhandledRejection", (err) => {
+    console.error(`❌ Unhandled Rejection: ${err.message}`);
+    server.close(() => process.exit(1));
+  });
+
+  // Handle SIGTERM
+  process.on("SIGTERM", () => {
+    console.log("👋 SIGTERM received. Shutting down gracefully...");
+    server.close(() => {
+      console.log("✅ Process terminated!");
+    });
+  });
+
+  return app;
+};
+
+// Start the server
+startServer().catch((error) => {
+  console.error("❌ Failed to start server:", error);
+  process.exit(1);
+});
