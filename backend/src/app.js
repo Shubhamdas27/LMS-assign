@@ -13,39 +13,42 @@ const createApp = () => {
   // Security Middleware
   app.use(helmet());
 
-  // CORS Configuration - Allow all Vercel domains
+  // CORS Configuration - Explicit and permissive for debugging
   app.use(
     cors({
-      origin: (origin, callback) => {
-        // Allow requests with no origin (mobile apps, Postman, etc.)
-        if (!origin) return callback(null, true);
-
-        // Allow all Vercel and localhost origins
-        if (
-          origin.includes(".vercel.app") ||
-          origin.includes("localhost") ||
-          origin.includes("127.0.0.1") ||
-          origin === process.env.CLIENT_URL ||
-          origin === process.env.CORS_ORIGIN
-        ) {
-          callback(null, true);
-        } else {
-          console.log("CORS blocked origin:", origin);
-          callback(null, true); // Temporarily allow all origins for debugging
-        }
-      },
+      origin: true, // Allow all origins for now
       credentials: true,
       methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"],
       allowedHeaders: [
+        "Origin",
+        "X-Requested-With", 
         "Content-Type",
+        "Accept",
         "Authorization",
         "x-auth-token",
         "Access-Control-Allow-Origin",
+        "Access-Control-Allow-Headers",
+        "Access-Control-Allow-Methods"
       ],
+      exposedHeaders: ["x-auth-token"],
       preflightContinue: false,
-      optionsSuccessStatus: 200,
+      optionsSuccessStatus: 200
     })
   );
+
+  // Additional CORS headers for preflight requests
+  app.use((req, res, next) => {
+    res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
+    res.header("Access-Control-Allow-Credentials", "true");
+    res.header("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS");
+    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, Authorization, x-auth-token");
+    
+    if (req.method === 'OPTIONS') {
+      res.status(200).end();
+      return;
+    }
+    next();
+  });
 
   // Body Parser Middleware
   app.use(express.json());

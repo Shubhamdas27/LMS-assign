@@ -7,6 +7,11 @@ const User = require("../models/User");
  */
 const auth = async (req, res, next) => {
   try {
+    // Skip authentication for OPTIONS requests (CORS preflight)
+    if (req.method === 'OPTIONS') {
+      return next();
+    }
+
     // Get token from header
     const token = req.header("Authorization")?.replace("Bearer ", "");
 
