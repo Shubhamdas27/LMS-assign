@@ -17,7 +17,14 @@ exports.getAllCourses = async (req, res) => {
 
     const courses = await Course.find()
       .populate("instructor", "name email")
-      .populate("sections")
+      .populate({
+        path: "sections",
+        populate: [
+          { path: "videos", options: { sort: { order: 1 } } },
+          { path: "documents", options: { sort: { order: 1 } } },
+        ],
+        options: { sort: { order: 1 } },
+      })
       .skip(skip)
       .limit(limit)
       .sort({ createdAt: -1 });
@@ -55,7 +62,11 @@ exports.getCourseById = async (req, res) => {
       .populate("instructor", "name email avatar")
       .populate({
         path: "sections",
-        populate: [{ path: "videos" }, { path: "documents" }],
+        populate: [
+          { path: "videos", options: { sort: { order: 1 } } },
+          { path: "documents", options: { sort: { order: 1 } } },
+        ],
+        options: { sort: { order: 1 } },
       });
 
     if (!course) {

@@ -48,7 +48,7 @@ exports.createVideo = async (req, res) => {
 
     await video.save();
 
-    // Add video to section
+    // Add video to section's videos array
     sectionDoc.videos.push(video._id);
     await sectionDoc.save();
 
@@ -173,6 +173,58 @@ exports.getVideoById = async (req, res) => {
     res.status(500).json({
       success: false,
       message: "Failed to fetch video",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @route   GET /api/videos
+ * @desc    Get all videos (Admin only)
+ * @access  Private/Admin
+ */
+exports.getAllVideos = async (req, res) => {
+  try {
+    const videos = await Video.find()
+      .populate("section", "title course")
+      .sort({ createdAt: -1 });
+
+    res.json({
+      success: true,
+      count: videos.length,
+      videos,
+    });
+  } catch (error) {
+    console.error("Get all videos error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch videos",
+      error: error.message,
+    });
+  }
+};
+
+/**
+ * @route   GET /api/videos/section/:sectionId
+ * @desc    Get videos by section
+ * @access  Private
+ */
+exports.getVideosBySection = async (req, res) => {
+  try {
+    const videos = await Video.find({ section: req.params.sectionId }).sort({
+      order: 1,
+    });
+
+    res.json({
+      success: true,
+      count: videos.length,
+      videos,
+    });
+  } catch (error) {
+    console.error("Get videos by section error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Failed to fetch section videos",
       error: error.message,
     });
   }

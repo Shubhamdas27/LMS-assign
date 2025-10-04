@@ -8,6 +8,16 @@ const admin = require("../middleware/admin");
  * Video Routes
  */
 
+// @route   GET /api/videos
+// @desc    Get all videos
+// @access  Private/Admin
+router.get("/", auth, admin, videoController.getAllVideos);
+
+// @route   GET /api/videos/section/:sectionId
+// @desc    Get videos by section
+// @access  Private
+router.get("/section/:sectionId", auth, videoController.getVideosBySection);
+
 // @route   GET /api/videos/:id
 // @desc    Get single video
 // @access  Private
