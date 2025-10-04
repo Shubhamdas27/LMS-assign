@@ -21,12 +21,33 @@ const initializeGemini = async () => {
 
     genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
     
-    // Use gemini-pro as default model
-    model = genAI.getGenerativeModel({ model: "gemini-pro" });
-    currentModelName = "gemini-pro";
+    // Try working models (tested October 2025)
+    const models = [
+      "gemini-2.5-flash",
+      "gemini-2.0-flash", 
+      "gemini-flash-latest"
+    ];
     
-    console.log(`✅ Gemini AI initialized with model: gemini-pro`);
-    return true;
+    for (const modelName of models) {
+      try {
+        console.log(`🔄 Trying model: ${modelName}...`);
+        model = genAI.getGenerativeModel({ model: modelName });
+        
+        // Quick test
+        const test = await model.generateContent("Hi");
+        await test.response.text();
+        
+        currentModelName = modelName;
+        console.log(`✅ Gemini AI initialized with model: ${modelName}`);
+        return true;
+      } catch (err) {
+        console.log(`❌ Model ${modelName} failed, trying next...`);
+        continue;
+      }
+    }
+    
+    console.warn("⚠️ No working Gemini models found");
+    return false;
   } catch (error) {
     console.error("❌ Gemini initialization failed:", error.message);
     console.warn("⚠️ AI summarization will be disabled");
