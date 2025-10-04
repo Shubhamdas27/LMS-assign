@@ -210,18 +210,17 @@ Upon completion of this material, students should demonstrate improved understan
         } catch (error) {
           console.error("❌ AI generation failed:", error);
 
-          // Use comprehensive structured fallback
-          const structuredSummary =
-            generateComprehensiveStructuredSummary(document);
+          // Use comprehensive default summary
+          const fallbackSummary = await generateDefaultDocumentSummary(document);
 
-          document.summary = structuredSummary;
+          document.summary = fallbackSummary;
           await document.save();
 
           return res.json({
             success: true,
             message:
-              "Comprehensive structured summary generated (AI unavailable)",
-            summary: structuredSummary,
+              "Comprehensive summary generated (AI unavailable)",
+            summary: fallbackSummary,
             cached: false,
             autoExtracted: false,
             aiGenerated: false,
